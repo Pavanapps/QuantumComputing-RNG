@@ -1,138 +1,402 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quantum RNG Pro</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body { background:#0f172a; color:white; font-family:'Segoe UI'; text-align:center; }
-.container { max-width:900px; margin:auto; padding:20px; }
-.card { background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; margin-top:20px; }
-input, select, button { padding:10px; margin:10px; width:200px; border-radius:8px; border:none; }
-button { background:#6366f1; color:white; cursor:pointer; }
-.loader { display:none; margin-top:20px; }
-.tabs button { margin:5px; }
-.tab-content { display:none; margin-top:20px; }
-.active { display:block; }
-img { margin-top:15px; border-radius:10px; }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#020617,#0f172a,#111827);
+    color:#fff;
+    min-height:100vh;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:30px 15px;
+}
+
+h1{
+    text-align:center;
+    font-size:38px;
+    margin-bottom:25px;
+    font-weight:700;
+}
+
+.sub{
+    text-align:center;
+    color:#cbd5e1;
+    margin-bottom:30px;
+}
+
+.card{
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:25px;
+    backdrop-filter:blur(8px);
+    box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+
+.controls{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+input,select,button{
+    width:100%;
+    padding:12px 14px;
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+}
+
+input,select{
+    background:#e2e8f0;
+    color:#111827;
+}
+
+button{
+    background:#6366f1;
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+    transition:.2s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    background:#4f46e5;
+}
+
+.loader{
+    display:none;
+    margin-top:18px;
+    color:#93c5fd;
+    font-weight:600;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-top:20px;
+}
+
+.stat{
+    background:rgba(255,255,255,0.04);
+    padding:18px;
+    border-radius:14px;
+}
+
+.stat small{
+    color:#94a3b8;
+    display:block;
+    margin-bottom:8px;
+}
+
+.stat strong{
+    font-size:24px;
+}
+
+.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.tabs button{
+    width:auto;
+    padding:10px 18px;
+}
+
+.tab-content{
+    display:none;
+}
+
+.active{
+    display:block;
+}
+
+pre{
+    background:#020617;
+    padding:15px;
+    border-radius:10px;
+    overflow:auto;
+    color:#93c5fd;
+}
+
+img{
+    max-width:100%;
+    border-radius:14px;
+    margin-top:15px;
+}
+
+.footer{
+    text-align:center;
+    color:#94a3b8;
+    margin-top:20px;
+    font-size:14px;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+
 <h1>⚛️ Quantum RNG Pro</h1>
+<p class="sub">True Random Numbers using Quantum Superposition</p>
 
 <div class="card">
-    <input id="bits" type="number" placeholder="Bits">
-    <input id="shots" type="number" placeholder="Shots">
+
+<div class="controls">
+    <input id="bits" type="number" min="1" max="16" value="4" placeholder="Bits">
+
+    <input id="shots" type="number" min="1" max="5000" value="100" placeholder="Shots">
 
     <select id="backend">
         <option value="simulator">Simulator</option>
-        <option value="real">Real Hardware</option>
+        <option value="real">Real Quantum Hardware</option>
     </select>
 
-    <br>
     <button onclick="generate()">Generate</button>
-    <div class="loader" id="loader">⏳ Running quantum job...</div>
+</div>
+
+<div class="loader" id="loader">⏳ Running quantum circuit...</div>
+
 </div>
 
 <div class="card" id="results" style="display:none;">
 
-    <div class="tabs">
-        <button onclick="showTab('resultTab')">Results</button>
-        <button onclick="showTab('metricsTab')">Metrics</button>
-        <button onclick="showTab('rawTab')">Raw Data</button>
-        <button onclick="showTab('blochTab')">Bloch Sphere</button>
+<div class="tabs">
+    <button onclick="showTab('tab1')">Results</button>
+    <button onclick="showTab('tab2')">Metrics</button>
+    <button onclick="showTab('tab3')">Raw Data</button>
+    <button onclick="showTab('tab4')">Bloch Sphere</button>
+</div>
+
+<div id="tab1" class="tab-content active">
+
+<div class="grid">
+    <div class="stat">
+        <small>Bitstring</small>
+        <strong id="bitstring">-</strong>
     </div>
 
-    <div id="resultTab" class="tab-content active">
-        <p><b>Bitstring:</b> <span id="bitstring"></span></p>
-        <p><b>Decimal:</b> <span id="decimal"></span></p>
-        <canvas id="chart"></canvas>
+    <div class="stat">
+        <small>Decimal</small>
+        <strong id="decimal">-</strong>
     </div>
 
-    <div id="metricsTab" class="tab-content">
-        <p><b>Expectation:</b> <span id="expectation"></span></p>
-        <p><b>Variance:</b> <span id="variance"></span></p>
+    <div class="stat">
+        <small>Backend</small>
+        <strong id="backend_used">-</strong>
     </div>
+</div>
 
-    <div id="rawTab" class="tab-content">
-        <pre id="raw"></pre>
-        <button onclick="downloadCSV()">Download CSV</button>
-    </div>
-
-    <div id="blochTab" class="tab-content">
-        <div id="blochContainer"></div>
-    </div>
+<br>
+<canvas id="chart"></canvas>
 
 </div>
+
+<div id="tab2" class="tab-content">
+
+<div class="grid">
+    <div class="stat">
+        <small>Expectation</small>
+        <strong id="expectation">-</strong>
+    </div>
+
+    <div class="stat">
+        <small>Variance</small>
+        <strong id="variance">-</strong>
+    </div>
+
+    <div class="stat">
+        <small>Randomness Score</small>
+        <strong id="score">-</strong>
+    </div>
+</div>
+
+</div>
+
+<div id="tab3" class="tab-content">
+    <pre id="raw"></pre>
+    <br>
+    <button onclick="downloadCSV()">Download CSV</button>
+</div>
+
+<div id="tab4" class="tab-content">
+    <div id="blochContainer"></div>
+</div>
+
+</div>
+
+<div class="footer">
+Quantum Portfolio Tool • Flask + Qiskit
+</div>
+
 </div>
 
 <script>
-let chart;
+let chart = null;
 
-function generate() {
+function generate(){
+
     document.getElementById("loader").style.display = "block";
 
-    fetch('/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            bits: document.getElementById("bits").value,
-            shots: document.getElementById("shots").value,
-            backend: document.getElementById("backend").value
+    fetch("/generate",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            bits:document.getElementById("bits").value,
+            shots:document.getElementById("shots").value,
+            backend:document.getElementById("backend").value
         })
     })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("loader").style.display = "none";
-        document.getElementById("results").style.display = "block";
 
-        document.getElementById("bitstring").innerText = data.bitstring;
-        document.getElementById("decimal").innerText = data.decimal;
-        document.getElementById("expectation").innerText = data.expectation;
-        document.getElementById("variance").innerText = data.variance;
-        document.getElementById("raw").innerText = JSON.stringify(data.counts, null, 2);
+    .then(res=>res.json())
+
+    .then(data=>{
+
+        document.getElementById("loader").style.display="none";
+        document.getElementById("results").style.display="block";
+
+        document.getElementById("bitstring").innerText=data.bitstring;
+        document.getElementById("decimal").innerText=data.decimal;
+        document.getElementById("backend_used").innerText=document.getElementById("backend").value;
+
+        document.getElementById("expectation").innerText=data.expectation;
+        document.getElementById("variance").innerText=data.variance;
+
+        let score = randomnessScore(data.counts);
+        document.getElementById("score").innerText = score + "%";
+
+        document.getElementById("raw").innerText =
+            JSON.stringify(data.counts,null,2);
 
         drawChart(data.counts);
 
-        const blochContainer = document.getElementById("blochContainer");
-        if (data.bloch) {
-            blochContainer.innerHTML = `<img src="${data.bloch}" width="300">`;
-        } else {
-            blochContainer.innerHTML = "<p>Bloch sphere available only for 1 qubit</p>";
+        const bloch = document.getElementById("blochContainer");
+
+        if(data.bloch){
+            bloch.innerHTML =
+            `<img src="${data.bloch}?t=${Date.now()}" width="320">`;
+        }else{
+            bloch.innerHTML =
+            "<p>Bloch sphere available only for 1 qubit.</p>";
         }
+
+    })
+
+    .catch(err=>{
+        document.getElementById("loader").style.display="none";
+        alert("Error running quantum generator.");
+        console.log(err);
     });
+
 }
 
-function drawChart(counts) {
+function drawChart(counts){
+
     const labels = Object.keys(counts);
     const values = Object.values(counts);
 
-    if (chart) chart.destroy();
+    if(chart){
+        chart.destroy();
+    }
 
-    chart = new Chart(document.getElementById("chart"), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{ label: 'Counts', data: values }]
+    chart = new Chart(
+        document.getElementById("chart"),
+        {
+            type:"bar",
+            data:{
+                labels:labels,
+                datasets:[{
+                    label:"Counts",
+                    data:values,
+                    borderWidth:1,
+                    borderRadius:8
+                }]
+            },
+            options:{
+                responsive:true,
+                plugins:{
+                    legend:{
+                        labels:{color:"white"}
+                    }
+                },
+                scales:{
+                    x:{
+                        ticks:{color:"white"}
+                    },
+                    y:{
+                        ticks:{color:"white"}
+                    }
+                }
+            }
         }
-    });
+    );
 }
 
-function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
+function showTab(id){
+    document.querySelectorAll(".tab-content")
+    .forEach(el=>el.classList.remove("active"));
+
+    document.getElementById(id)
+    .classList.add("active");
 }
 
-function downloadCSV() {
-    let text = document.getElementById("raw").innerText;
-    let blob = new Blob([text], { type: 'text/csv' });
-    let link = document.createElement('a');
+function downloadCSV(){
+
+    let raw = JSON.parse(
+        document.getElementById("raw").innerText
+    );
+
+    let csv = "State,Count\n";
+
+    for(let key in raw){
+        csv += key + "," + raw[key] + "\n";
+    }
+
+    let blob = new Blob([csv],{type:"text/csv"});
+    let link = document.createElement("a");
+
     link.href = URL.createObjectURL(blob);
-    link.download = "quantum_data.csv";
+    link.download = "quantum_rng.csv";
     link.click();
+}
+
+function randomnessScore(counts){
+
+    let vals = Object.values(counts);
+
+    let total = vals.reduce((a,b)=>a+b,0);
+
+    let ideal = total / vals.length;
+
+    let diff = vals.reduce((sum,v)=>
+        sum + Math.abs(v-ideal),0);
+
+    let score = 100 - ((diff/total)*100);
+
+    return score.toFixed(2);
 }
 </script>
 
