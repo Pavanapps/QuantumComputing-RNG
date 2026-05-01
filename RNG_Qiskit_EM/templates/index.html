@@ -1,1 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Quantum RNG Pro</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<style>
+body { background:#0f172a; color:white; font-family:'Segoe UI'; text-align:center; }
+.container { max-width:900px; margin:auto; padding:20px; }
+.card { background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; margin-top:20px; }
+input, select, button { padding:10px; margin:10px; width:200px; border-radius:8px; border:none; }
+button { background:#6366f1; color:white; cursor:pointer; }
+.loader { display:none; margin-top:20px; }
+.tabs button { margin:5px; }
+.tab-content { display:none; margin-top:20px; }
+.active { display:block; }
+img { margin-top:15px; border-radius:10px; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>⚛️ Quantum RNG Pro</h1>
+
+<div class="card">
+    <input id="bits" type="number" placeholder="Bits">
+    <input id="shots" type="number" placeholder="Shots">
+
+    <select id="backend">
+        <option value="simulator">Simulator</option>
+        <option value="real">Real Hardware</option>
+    </select>
+
+    <br>
+    <button onclick="generate()">Generate</button>
+    <div class="loader" id="loader">⏳ Running quantum job...</div>
+</div>
+
+<div class="card" id="results" style="display:none;">
+
+    <div class="tabs">
+        <button onclick="showTab('resultTab')">Results</button>
+        <button onclick="showTab('metricsTab')">Metrics</button>
+        <button onclick="showTab('rawTab')">Raw Data</button>
+        <button onclick="showTab('blochTab')">Bloch Sphere</button>
+    </div>
+
+    <div id="resultTab" class="tab-content active">
+        <p><b>Bitstring:</b> <span id="bitstring"></span></p>
+        <p><b>Decimal:</b> <span id="decimal"></span></p>
+        <canvas id="chart"></canvas>
+    </div>
+
+    <div id="metricsTab" class="tab-content">
+        <p><b>Expectation:</b> <span id="expectation"></span></p>
+        <p><b>Variance:</b> <span id="variance"></span></p>
+    </div>
+
+    <div id="rawTab" class="tab-content">
+        <pre id="raw"></pre>
+        <button onclick="downloadCSV()">Download CSV</button>
+    </div>
+
+    <div id="blochTab" class="tab-content">
+        <div id="blochContainer"></div>
+    </div>
+
+</div>
+</div>
+
+<script>
+let chart;
+
+function generate() {
+    document.getElementById("loader").style.display = "block";
+
+    fetch('/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            bits: document.getElementById("bits").value,
+            shots: document.getElementById("shots").value,
+            backend: document.getElementById("backend").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("results").style.display = "block";
+
+        document.getElementById("bitstring").innerText = data.bitstring;
+        document.getElementById("decimal").innerText = data.decimal;
+        document.getElementById("expectation").innerText = data.expectation;
+        document.getElementById("variance").innerText = data.variance;
+        document.getElementById("raw").innerText = JSON.stringify(data.counts, null, 2);
+
+        drawChart(data.counts);
+
+        const blochContainer = document.getElementById("blochContainer");
+        if (data.bloch) {
+            blochContainer.innerHTML = `<img src="${data.bloch}" width="300">`;
+        } else {
+            blochContainer.innerHTML = "<p>Bloch sphere available only for 1 qubit</p>";
+        }
+    });
+}
+
+function drawChart(counts) {
+    const labels = Object.keys(counts);
+    const values = Object.values(counts);
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("chart"), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{ label: 'Counts', data: values }]
+        }
+    });
+}
+
+function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+}
+
+function downloadCSV() {
+    let text = document.getElementById("raw").innerText;
+    let blob = new Blob([text], { type: 'text/csv' });
+    let link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "quantum_data.csv";
+    link.click();
+}
+</script>
+
+</body>
+</html>
