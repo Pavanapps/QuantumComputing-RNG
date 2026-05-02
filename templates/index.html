@@ -1,9 +1,11 @@
+<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quantum RNG Pro</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -14,389 +16,477 @@
 }
 
 body{
-    font-family:'Segoe UI',sans-serif;
+    font-family:Segoe UI,Arial,sans-serif;
+    min-height:100vh;
     background:linear-gradient(135deg,#020617,#0f172a,#111827);
     color:#fff;
-    min-height:100vh;
+    overflow-x:hidden;
+}
+
+/* Animated*/
+
+.bg{
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at 20% 20%,rgba(99,102,241,.15),transparent 25%),
+radial-gradient(circle at 80% 30%,rgba(0,255,255,.08),transparent 25%),
+radial-gradient(circle at 50% 80%,rgba(168,85,247,.12),transparent 30%);
+animation:floatbg 8s infinite alternate ease-in-out;
+z-index:-1;
+}
+
+@keyframes floatbg{
+from{transform:translateY(0)}
+to{transform:translateY(-20px)}
 }
 
 .container{
-    max-width:1100px;
-    margin:auto;
-    padding:30px 15px;
+max-width:1150px;
+margin:auto;
+padding:30px 20px;
 }
 
-h1{
-    text-align:center;
-    font-size:38px;
-    margin-bottom:25px;
-    font-weight:700;
+.hero{
+text-align:center;
+margin-top:10px;
+margin-bottom:30px;
 }
 
-.sub{
-    text-align:center;
-    color:#cbd5e1;
-    margin-bottom:30px;
+.logo{
+font-size:54px;
+margin-bottom:10px;
+}
+
+.hero h1{
+font-size:52px;
+font-weight:800;
+letter-spacing:.5px;
+}
+
+.hero p{
+margin-top:12px;
+font-size:20px;
+color:#cbd5e1;
 }
 
 .card{
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:18px;
-    padding:22px;
-    margin-bottom:25px;
-    backdrop-filter:blur(8px);
-    box-shadow:0 8px 30px rgba(0,0,0,.35);
-}
-
-.controls{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
-}
-
-input,select,button{
-    width:100%;
-    padding:12px 14px;
-    border:none;
-    border-radius:10px;
-    font-size:15px;
-}
-
-input,select{
-    background:#e2e8f0;
-    color:#111827;
-}
-
-button{
-    background:#6366f1;
-    color:#fff;
-    cursor:pointer;
-    font-weight:600;
-    transition:.2s;
-}
-
-button:hover{
-    transform:translateY(-2px);
-    background:#4f46e5;
-}
-
-.loader{
-    display:none;
-    margin-top:18px;
-    color:#93c5fd;
-    font-weight:600;
+background:rgba(255,255,255,.06);
+backdrop-filter:blur(12px);
+border:1px solid rgba(255,255,255,.08);
+border-radius:24px;
+padding:24px;
+box-shadow:0 20px 60px rgba(0,0,0,.35);
+margin-bottom:24px;
 }
 
 .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
-    margin-top:20px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+}
+
+input,select,button{
+width:100%;
+padding:16px;
+border:none;
+outline:none;
+border-radius:14px;
+font-size:18px;
+}
+
+input,select{
+background:#e5e7eb;
+color:#111827;
+}
+
+button{
+background:linear-gradient(90deg,#6366f1,#7c3aed);
+color:#fff;
+font-weight:700;
+cursor:pointer;
+transition:.25s;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 25px rgba(99,102,241,.35);
+}
+
+.small-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-top:18px;
 }
 
 .stat{
-    background:rgba(255,255,255,0.04);
-    padding:18px;
-    border-radius:14px;
+padding:18px;
+border-radius:18px;
+background:rgba(255,255,255,.04);
+text-align:center;
 }
 
-.stat small{
-    color:#94a3b8;
-    display:block;
-    margin-bottom:8px;
+.stat h3{
+font-size:14px;
+color:#94a3b8;
+margin-bottom:8px;
+font-weight:500;
 }
 
-.stat strong{
-    font-size:24px;
+.stat p{
+font-size:24px;
+font-weight:800;
+word-break:break-word;
 }
 
 .tabs{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:20px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:18px;
 }
 
-.tabs button{
-    width:auto;
-    padding:10px 18px;
+.tab-btn{
+width:auto;
+padding:10px 16px;
+font-size:15px;
 }
 
-.tab-content{
-    display:none;
+.tab{
+display:none;
 }
 
-.active{
-    display:block;
+.tab.active{
+display:block;
 }
 
-pre{
-    background:#020617;
-    padding:15px;
-    border-radius:10px;
-    overflow:auto;
-    color:#93c5fd;
+.loader{
+display:none;
+text-align:center;
+padding:18px;
+font-size:18px;
+color:#93c5fd;
+animation:pulse 1s infinite;
 }
 
-img{
-    max-width:100%;
-    border-radius:14px;
-    margin-top:15px;
+@keyframes pulse{
+50%{opacity:.4}
+}
+
+.actions{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+margin-top:18px;
 }
 
 .footer{
-    text-align:center;
-    color:#94a3b8;
-    margin-top:20px;
-    font-size:14px;
+text-align:center;
+margin-top:28px;
+color:#94a3b8;
+font-size:15px;
+}
+
+pre{
+white-space:pre-wrap;
+word-break:break-word;
+font-size:14px;
+line-height:1.5;
+}
+
+canvas{
+background:#fff;
+border-radius:16px;
+padding:10px;
+}
+
+@media(max-width:950px){
+.grid{grid-template-columns:1fr}
+.small-grid{grid-template-columns:1fr 1fr}
+.actions{grid-template-columns:1fr 1fr}
+.hero h1{font-size:36px}
+}
+
+@media(max-width:600px){
+.small-grid{grid-template-columns:1fr}
+.actions{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
+<div class="bg"></div>
 
 <div class="container">
 
-<h1>⚛️ Quantum RNG Pro</h1>
-<p class="sub">True Random Numbers using Quantum Superposition</p>
-
-<div class="card">
-
-<div class="controls">
-    <input id="bits" type="number" min="1" max="16" value="4" placeholder="Bits">
-
-    <input id="shots" type="number" min="1" max="5000" value="100" placeholder="Shots">
-
-    <select id="backend">
-        <option value="simulator">Simulator</option>
-        <option value="real">Real Quantum Hardware</option>
-    </select>
-
-    <button onclick="generate()">Generate</button>
+<div class="hero">
+<div class="logo">⚛️</div>
+<h1>Quantum RNG Pro</h1>
+<p>Enterprise Randomness Engine powered by Quantum Superposition</p>
 </div>
 
-<div class="loader" id="loader">⏳ Running quantum circuit...</div>
+<div class="card">
+<div class="grid">
 
+<input id="bits" type="number" min="1" max="16" placeholder="Bits" autocomplete="off">
+
+<input id="shots" type="number" min="1" max="5000" placeholder="Shots" autocomplete="off">
+
+<select id="backend">
+<option value="simulator">Simulator</option>
+<option value="real">IBM Hardware</option>
+</select>
+
+<button onclick="generate()">Generate</button>
+
+</div>
+
+<div class="actions" style="margin-top:15px;">
+<button onclick="preset(8)">8-bit Key</button>
+<button onclick="preset(16)">16-bit Code</button>
+<button onclick="preset(32)">32-bit Token</button>
+<button onclick="preset(64)">64-bit Seed</button>
+</div>
+
+<div class="loader" id="loader">⏳ Collapsing wavefunction...</div>
 </div>
 
 <div class="card" id="results" style="display:none;">
 
 <div class="tabs">
-    <button onclick="showTab('tab1')">Results</button>
-    <button onclick="showTab('tab2')">Metrics</button>
-    <button onclick="showTab('tab3')">Raw Data</button>
-    <button onclick="showTab('tab4')">Bloch Sphere</button>
+<button class="tab-btn" onclick="showTab('overview')">Overview</button>
+<button class="tab-btn" onclick="showTab('charts')">Charts</button>
+<button class="tab-btn" onclick="showTab('raw')">Raw Data</button>
+<button class="tab-btn" onclick="showTab('learn')">How It Works</button>
 </div>
 
-<div id="tab1" class="tab-content active">
+<div id="overview" class="tab active">
 
-<div class="grid">
-    <div class="stat">
-        <small>Bitstring</small>
-        <strong id="bitstring">-</strong>
-    </div>
+<div class="small-grid">
 
-    <div class="stat">
-        <small>Decimal</small>
-        <strong id="decimal">-</strong>
-    </div>
-
-    <div class="stat">
-        <small>Backend</small>
-        <strong id="backend_used">-</strong>
-    </div>
+<div class="stat">
+<h3>Bitstring</h3>
+<p id="bitstring">-</p>
 </div>
 
-<br>
-<canvas id="chart"></canvas>
-
+<div class="stat">
+<h3>Decimal</h3>
+<p id="decimal">-</p>
 </div>
 
-<div id="tab2" class="tab-content">
+<div class="stat">
+<h3>Hex</h3>
+<p id="hex">-</p>
+</div>
 
-<div class="grid">
-    <div class="stat">
-        <small>Expectation</small>
-        <strong id="expectation">-</strong>
-    </div>
-
-    <div class="stat">
-        <small>Variance</small>
-        <strong id="variance">-</strong>
-    </div>
-
-    <div class="stat">
-        <small>Randomness Score</small>
-        <strong id="score">-</strong>
-    </div>
+<div class="stat">
+<h3>Entropy</h3>
+<p id="entropy">-</p>
 </div>
 
 </div>
 
-<div id="tab3" class="tab-content">
-    <pre id="raw"></pre>
-    <br>
-    <button onclick="downloadCSV()">Download CSV</button>
+<div class="small-grid">
+
+<div class="stat">
+<h3>Expectation</h3>
+<p id="expectation">-</p>
 </div>
 
-<div id="tab4" class="tab-content">
-    <div id="blochContainer"></div>
+<div class="stat">
+<h3>Variance</h3>
+<p id="variance">-</p>
+</div>
+
+<div class="stat">
+<h3>Timestamp</h3>
+<p id="timestamp">-</p>
+</div>
+
+<div class="stat">
+<h3>Backend</h3>
+<p id="usedbackend">-</p>
+</div>
+
+</div>
+
+<div class="actions">
+<button onclick="copyResult()">Copy</button>
+<button onclick="downloadTXT()">TXT</button>
+<button onclick="downloadCSV()">CSV</button>
+<button onclick="downloadJSON()">JSON</button>
+</div>
+
+</div>
+
+<div id="charts" class="tab">
+<canvas id="chart" height="120"></canvas>
+</div>
+
+<div id="raw" class="tab">
+<pre id="rawdata"></pre>
+</div>
+
+<div id="learn" class="tab">
+<h2 style="margin-bottom:12px;">How Quantum RNG Works</h2>
+<p style="line-height:1.8;color:#cbd5e1;">
+1. Qubits are initialized to |0⟩ <br><br>
+2. Hadamard gate creates superposition <br><br>
+3. Measuring collapses state randomly <br><br>
+4. Output bitstring becomes unpredictable random number
+</p>
 </div>
 
 </div>
 
 <div class="footer">
-Quantum Portfolio Tool • Flask + Qiskit
+Built with Flask + Qiskit + Quantum Computing
 </div>
 
 </div>
 
 <script>
-let chart = null;
+let chart;
+let latest = {};
+
+window.onload = ()=>{
+document.getElementById("bits").value="";
+document.getElementById("shots").value="";
+};
+
+function preset(bits){
+document.getElementById("bits").value = bits;
+document.getElementById("shots").value = 100;
+}
 
 function generate(){
 
-    document.getElementById("loader").style.display = "block";
+let bits = document.getElementById("bits").value;
+let shots = document.getElementById("shots").value;
 
-    fetch("/generate",{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-            bits:document.getElementById("bits").value,
-            shots:document.getElementById("shots").value,
-            backend:document.getElementById("backend").value
-        })
-    })
+if(!bits || bits < 1){
+alert("Enter valid bits");
+return;
+}
 
-    .then(res=>res.json())
+if(!shots || shots < 1){
+alert("Enter valid shots");
+return;
+}
 
-    .then(data=>{
+document.getElementById("loader").style.display="block";
 
-        document.getElementById("loader").style.display="none";
-        document.getElementById("results").style.display="block";
+fetch('/generate',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({
+bits:bits,
+shots:shots,
+backend:document.getElementById("backend").value
+})
+})
+.then(r=>r.json())
+.then(data=>{
 
-        document.getElementById("bitstring").innerText=data.bitstring;
-        document.getElementById("decimal").innerText=data.decimal;
-        document.getElementById("backend_used").innerText=document.getElementById("backend").value;
+latest = data;
 
-        document.getElementById("expectation").innerText=data.expectation;
-        document.getElementById("variance").innerText=data.variance;
+document.getElementById("loader").style.display="none";
+document.getElementById("results").style.display="block";
 
-        let score = randomnessScore(data.counts);
-        document.getElementById("score").innerText = score + "%";
+document.getElementById("bitstring").innerText = data.bitstring;
+document.getElementById("decimal").innerText = data.decimal;
+document.getElementById("hex").innerText = "0x" + Number(data.decimal).toString(16).toUpperCase();
+document.getElementById("entropy").innerText = entropy(data.counts);
+document.getElementById("expectation").innerText = data.expectation;
+document.getElementById("variance").innerText = data.variance;
+document.getElementById("timestamp").innerText = new Date().toLocaleTimeString();
+document.getElementById("usedbackend").innerText = document.getElementById("backend").value;
 
-        document.getElementById("raw").innerText =
-            JSON.stringify(data.counts,null,2);
+document.getElementById("rawdata").innerText = JSON.stringify(data.counts,null,2);
 
-        drawChart(data.counts);
+drawChart(data.counts);
 
-        const bloch = document.getElementById("blochContainer");
+showTab('overview');
 
-        if(data.bloch){
-            bloch.innerHTML =
-            `<img src="${data.bloch}?t=${Date.now()}" width="320">`;
-        }else{
-            bloch.innerHTML =
-            "<p>Bloch sphere available only for 1 qubit.</p>";
-        }
-
-    })
-
-    .catch(err=>{
-        document.getElementById("loader").style.display="none";
-        alert("Error running quantum generator.");
-        console.log(err);
-    });
-
+})
+.catch(()=>{
+document.getElementById("loader").style.display="none";
+alert("Quantum backend error");
+});
 }
 
 function drawChart(counts){
 
-    const labels = Object.keys(counts);
-    const values = Object.values(counts);
+const labels = Object.keys(counts);
+const values = Object.values(counts);
 
-    if(chart){
-        chart.destroy();
-    }
+if(chart) chart.destroy();
 
-    chart = new Chart(
-        document.getElementById("chart"),
-        {
-            type:"bar",
-            data:{
-                labels:labels,
-                datasets:[{
-                    label:"Counts",
-                    data:values,
-                    borderWidth:1,
-                    borderRadius:8
-                }]
-            },
-            options:{
-                responsive:true,
-                plugins:{
-                    legend:{
-                        labels:{color:"white"}
-                    }
-                },
-                scales:{
-                    x:{
-                        ticks:{color:"white"}
-                    },
-                    y:{
-                        ticks:{color:"white"}
-                    }
-                }
-            }
-        }
-    );
+chart = new Chart(document.getElementById("chart"),{
+type:'bar',
+data:{
+labels:labels,
+datasets:[{
+label:'Counts',
+data:values
+}]
+},
+options:{
+responsive:true,
+plugins:{
+legend:{display:false}
+}
+}
+});
 }
 
 function showTab(id){
-    document.querySelectorAll(".tab-content")
-    .forEach(el=>el.classList.remove("active"));
+document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
 
-    document.getElementById(id)
-    .classList.add("active");
+function copyResult(){
+navigator.clipboard.writeText(latest.bitstring || "");
+alert("Copied");
+}
+
+function downloadTXT(){
+downloadFile("result.txt", latest.bitstring || "");
 }
 
 function downloadCSV(){
-
-    let raw = JSON.parse(
-        document.getElementById("raw").innerText
-    );
-
-    let csv = "State,Count\n";
-
-    for(let key in raw){
-        csv += key + "," + raw[key] + "\n";
-    }
-
-    let blob = new Blob([csv],{type:"text/csv"});
-    let link = document.createElement("a");
-
-    link.href = URL.createObjectURL(blob);
-    link.download = "quantum_rng.csv";
-    link.click();
+let txt="state,count\n";
+for(let k in latest.counts){
+txt += k + "," + latest.counts[k] + "\n";
+}
+downloadFile("result.csv",txt);
 }
 
-function randomnessScore(counts){
+function downloadJSON(){
+downloadFile("result.json", JSON.stringify(latest,null,2));
+}
 
-    let vals = Object.values(counts);
+function downloadFile(name,data){
+const blob = new Blob([data],{type:'text/plain'});
+const a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download=name;
+a.click();
+}
 
-    let total = vals.reduce((a,b)=>a+b,0);
+function entropy(counts){
+let total=0;
+for(let k in counts){ total += counts[k]; }
 
-    let ideal = total / vals.length;
+let e=0;
 
-    let diff = vals.reduce((sum,v)=>
-        sum + Math.abs(v-ideal),0);
+for(let k in counts){
+let p = counts[k]/total;
+e += -p*Math.log2(p);
+}
 
-    let score = 100 - ((diff/total)*100);
-
-    return score.toFixed(2);
+return e.toFixed(3);
 }
 </script>
 
